@@ -70,29 +70,32 @@ export const updateUserById = async (req, res) => {
 }; */
 
 export const signin = async (req, res) => {
-
+  
   const { email, password } = req.body;
   console.log(req.body);
 
-  UserModal.findOne({ email})
-  .then(user => {
-      if (!user) {
+  const oldUser = await UserModal.findOne({ email})
+  .then(oldUser => {
+      if (!oldUser) {
           return res.status(401).json({ error: 'wrong username ', error });
       }
-      bcrypt.compare(req.body.password, user.password)
+      bcrypt.compare(req.body.password, oldUser.password)
           .then(valid => {
-              console.log(req.body.password + " " + user.password);
+              console.log(req.body.password + " " + oldUser.password);
               if (!valid) {
                   return res.status(401).json({ error: 'wrong password' });
               }
-             const token = jwt.sign(
-                { email: user.email, id: user._id },
-               process.env.secret,
-               {
-                 expiresIn: "1h",
-               }
-             );
-              res.status(200).json(user);
+              res.status(200).json({
+                  oldUser: oldUser,
+                  token: jwt.sign(
+                         { email: oldUser.email, id: oldUser._id },
+                        process.env.secret,
+                        {
+                          expiresIn: "1h",
+                        }
+                      )
+
+              });
           })
           .catch(error => res.status(500).json({ error }));
   })
