@@ -38,6 +38,7 @@ app.get('/uploads2/:id', (req, res) => {
   res.sendFile(path.join(__dirname, `./uploads2/${req.params.id}`));
 });
 
+mongoose.set('strictQuery', true);
 mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => app.listen(PORT, () => {
     console.log(`Now listening on port ${PORT}`);
