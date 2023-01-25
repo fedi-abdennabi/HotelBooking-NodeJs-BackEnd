@@ -79,7 +79,6 @@ export const signin = async (req, res) => {
 
     if (!oldUser)
       return res.status(404).json({ message: "Email adress doesn't exist !" });
-
     const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
 
     if (!isPasswordCorrect)
@@ -92,14 +91,12 @@ export const signin = async (req, res) => {
         expiresIn: "1h",
       }
     );
-
-
     res.status(200).json(oldUser);
   } catch (err) {
-    console.log(oldUser);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
 
 export const signup = async (req, res) => {
   const { email, password, firstname, lastname, role ,profilePic} = req.body;
