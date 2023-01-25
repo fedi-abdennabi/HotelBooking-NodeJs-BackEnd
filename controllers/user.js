@@ -83,7 +83,7 @@ export const signin = async (req, res) => {
               }
               res.status(200).json({
                   user: user,
-                  token: jwt.sign({ userId: user._id },
+                  token: jwt.sign({ id: user._id },
                       'RANDOM_TOKEN_SECRET', { expiresIn: '24h' }
                   )
 
