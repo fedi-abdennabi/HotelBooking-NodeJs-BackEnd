@@ -81,12 +81,7 @@ export const signin = async (req, res) => {
                         return res.status(401).json({ error: 'wrong password' });
                     }
                     res.status(200).json({
-                        id: user.id,
-                        firstname: user.firstname,
-                        lastname: user.lastname,
-                        email: user.email,
-                        password : user.password,
-                        role : user.role,
+                        UserModal:user._id,
                         token: jwt.sign({ userId: user._id },
                             'RANDOM_TOKEN_SECRET', { expiresIn: '24h' }
                         )
