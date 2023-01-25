@@ -71,6 +71,7 @@ export const updateUserById = async (req, res) => {
 
 export const signin = async (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body);
 
   try {
     const oldUser = await UserModal.findOne({ email });
@@ -95,6 +96,7 @@ export const signin = async (req, res) => {
     res.status(200).json(oldUser);
     console.log(oldUser);
   } catch (err) {
+    console.log(oldUser);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
