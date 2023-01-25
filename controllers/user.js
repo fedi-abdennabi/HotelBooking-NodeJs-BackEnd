@@ -70,25 +70,30 @@ export const updateUserById = async (req, res) => {
 }; */
 
 export const signin = async (req, res) => {
-  user.findOne({ email: req.body.email })
-  .then(user => {
-      if (!user) {
+
+  const { email, password } = req.body;
+  console.log(req.body);
+
+  UserModal.findOne({ email})
+  .then(oldUser => {
+      if (!oldUser) {
           return res.status(401).json({ error: 'wrong username ', error });
       }
-      bcrypt.compare(req.body.password, user.password)
+      bcrypt.compare(req.body.password, oldUser.password)
           .then(valid => {
-              console.log(req.body.password + " " + user.password);
+              console.log(req.body.password + " " + oldUser.password);
               if (!valid) {
                   return res.status(401).json({ error: 'wrong password' });
               }
-              res.status(200).json({
-                  user: user,
-                  token: jwt.sign({ id: user._id },
-                      'RANDOM_TOKEN_SECRET', { expiresIn: '24h' }
-                  )
-
-              });
-          })
+              const token = jwt.sign(
+                    { email: oldUser.email, id: oldUser._id },
+                    process.env.secret,
+                    {
+                      expiresIn: "1h",
+                    }
+                  );
+              res.status(200).json(oldUser)
+           })
           .catch(error => res.status(500).json({ error }));
   })
   .catch(error => res.status(500).json({ error }));
