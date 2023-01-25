@@ -81,7 +81,7 @@ export const signin = async (req, res) => {
                         return res.status(401).json({ error: 'wrong password' });
                     }
                     res.status(200).json({
-                        id: user._id,
+                        userId: user._id,
                         firstname: user.firstname,
                         lastname: user.lastname,
                         email: user.email,
