@@ -70,31 +70,54 @@ export const updateUserById = async (req, res) => {
 }; */
 
 export const signin = async (req, res) => {
-  const { email, password } = req.body;
-  console.log(req.body);
-
-  try {
-    const oldUser = await UserModal.findOne({ email });
-    console.log(oldUser);
-
-    if (!oldUser)
-      return res.status(404).json({ message: "Email adress doesn't exist !" });
-    const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
-
-    if (!isPasswordCorrect)
-      return res.status(400).json({ message: "Invalid password !" });
-
-    const token = jwt.sign(
-      { email: oldUser.email, id: oldUser._id },
-      process.env.secret,
-      {
-        expiresIn: "1h",
+  user.findOne({ email: req.body.email })
+  .then(user => {
+      if (!user) {
+          return res.status(401).json({ error: 'wrong username ', error });
       }
-    );
-    res.status(200).json(oldUser);
-  } catch (err) {
-    res.status(500).json({ message: "Something went wrong" });
-  }
+      bcrypt.compare(req.body.password, user.password)
+          .then(valid => {
+              console.log(req.body.password + " " + user.password);
+              if (!valid) {
+                  return res.status(401).json({ error: 'wrong password' });
+              }
+              res.status(200).json({
+                  user: user,
+                  token: jwt.sign({ userId: user._id },
+                      'RANDOM_TOKEN_SECRET', { expiresIn: '24h' }
+                  )
+
+              });
+          })
+          .catch(error => res.status(500).json({ error }));
+  })
+  .catch(error => res.status(500).json({ error }));
+
+  // const { email, password } = req.body;
+  // console.log(req.body);
+
+  // try {
+  //   const oldUser = await UserModal.findOne({ email });
+  //   console.log(oldUser);
+
+  //   if (!oldUser)
+  //     return res.status(404).json({ message: "Email adress doesn't exist !" });
+  //   const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
+
+  //   if (!isPasswordCorrect)
+  //     return res.status(400).json({ message: "Invalid password !" });
+
+  //   const token = jwt.sign(
+  //     { email: oldUser.email, id: oldUser._id },
+  //     process.env.secret,
+  //     {
+  //       expiresIn: "1h",
+  //     }
+  //   );
+  //   res.status(200).json(oldUser);
+  // } catch (err) {
+  //   res.status(500).json({ message: "Something went wrong" });
+  // }
 };
 
 
