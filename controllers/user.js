@@ -75,6 +75,7 @@ export const signin = async (req, res) => {
 
   try {
     const oldUser = await UserModal.findOne({ email });
+    console.log(oldUser);
 
     if (!oldUser)
       return res.status(404).json({ message: "Email adress doesn't exist !" });
@@ -94,7 +95,6 @@ export const signin = async (req, res) => {
 
 
     res.status(200).json(oldUser);
-    console.log(oldUser);
   } catch (err) {
     console.log(oldUser);
     res.status(500).json({ message: "Something went wrong" });
