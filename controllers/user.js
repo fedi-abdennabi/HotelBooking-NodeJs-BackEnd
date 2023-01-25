@@ -70,11 +70,8 @@ export const updateUserById = async (req, res) => {
 }; */
 
 export const signin = async (req, res) => {
-  
   const { email, password } = req.body;
-  console.log(req.body);
-
-  const oldUser = await UserModal.findOne({ email})
+  UserModal.findOne({ email })
   .then(oldUser => {
       if (!oldUser) {
           return res.status(401).json({ error: 'wrong username ', error });
@@ -85,21 +82,20 @@ export const signin = async (req, res) => {
               if (!valid) {
                   return res.status(401).json({ error: 'wrong password' });
               }
-              res.status(200).json({
-                  oldUser: oldUser,
-                  token: jwt.sign(
-                         { email: oldUser.email, id: oldUser._id },
-                        process.env.secret,
-                        {
-                          expiresIn: "1h",
-                        }
-                      )
 
-              });
+              const token = jwt.sign(
+                    { email: oldUser.email, id: oldUser._id },
+                    process.env.secret,
+                    {
+                      expiresIn: "1h",
+                    }
+                  );
+
+              res.status(200).json(oldUser);
           })
-          .catch(error => res.status(500).json({ error }));
+          .catch(error1 => res.status(500).json({ error1 }));
   })
-  .catch(error => res.status(500).json({ error }));
+  .catch(error2 => res.status(501).json({ error2 }));
 
   // const { email, password } = req.body;
   // console.log(req.body);
