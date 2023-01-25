@@ -91,7 +91,7 @@ export const signin = async (req, res) => {
                     }
                   );
 
-              res.status(200).json(oldUser);
+              res.status(200).json(oldUser._id,oldUser.email,oldUser.password);
           })
           .catch(error1 => res.status(500).json({ error1 }));
   })
