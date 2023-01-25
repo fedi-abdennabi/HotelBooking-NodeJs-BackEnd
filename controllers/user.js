@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 
 
 import multer from "multer";
-import user from "../models/user.js";
 import UserModal from "../models/user.js";
 dotenv.config();
 
@@ -70,32 +69,29 @@ export const updateUserById = async (req, res) => {
 }; */
 
 export const signin = async (req, res) => {
-  const { email, password } = req.body;
-  UserModal.findOne({ email })
-  .then(oldUser => {
-      if (!oldUser) {
-          return res.status(401).json({ error: 'wrong username ', error });
-      }
-      bcrypt.compare(req.body.password, oldUser.password)
-          .then(valid => {
-              console.log(req.body.password + " " + oldUser.password);
-              if (!valid) {
-                  return res.status(401).json({ error: 'wrong password' });
-              }
-
-              const token = jwt.sign(
-                    { email: oldUser.email, id: oldUser._id },
-                    process.env.secret,
-                    {
-                      expiresIn: "1h",
+  UserModal.findOne({ email: req.body.email })
+        .then(user => {
+            if (!user) {
+                return res.status(401).json({ error: 'wrong username ', error });
+            }
+            bcrypt.compare(req.body.password, user.password)
+                .then(valid => {
+                    console.log(req.body.password + " " + user.password);
+                    if (!valid) {
+                        return res.status(401).json({ error: 'wrong password' });
                     }
-                  );
+                    res.status(200).json({
+                        user: user,
+                        token: jwt.sign({ userId: user._id },
+                            'RANDOM_TOKEN_SECRET', { expiresIn: '24h' }
+                        )
 
-              res.status(200).json(oldUser._id,oldUser.email,oldUser.password);
-          })
-          .catch(error1 => res.status(500).json({ error1 }));
-  })
-  .catch(error2 => res.status(501).json({ error2 }));
+                    });
+                })
+                .catch(error => res.status(500).json({ error }));
+        })
+        .catch(error => res.status(500).json({ error }));
+
 
   // const { email, password } = req.body;
   // console.log(req.body);
