@@ -75,25 +75,25 @@ export const signin = async (req, res) => {
   console.log(req.body);
 
   UserModal.findOne({ email})
-  .then(oldUser => {
-      if (!oldUser) {
+  .then(user => {
+      if (!user) {
           return res.status(401).json({ error: 'wrong username ', error });
       }
-      bcrypt.compare(req.body.password, oldUser.password)
+      bcrypt.compare(req.body.password, user.password)
           .then(valid => {
-              console.log(req.body.password + " " + oldUser.password);
+              console.log(req.body.password + " " + user.password);
               if (!valid) {
                   return res.status(401).json({ error: 'wrong password' });
               }
-              const token = jwt.sign(
-                    { email: oldUser.email, id: oldUser._id },
-                    process.env.secret,
-                    {
-                      expiresIn: "1h",
-                    }
-                  );
-              res.status(200).json(oldUser)
-           })
+             const token = jwt.sign(
+                { email: user.email, id: user._id },
+               process.env.secret,
+               {
+                 expiresIn: "1h",
+               }
+             );
+              res.status(200).json(user);
+          })
           .catch(error => res.status(500).json({ error }));
   })
   .catch(error => res.status(500).json({ error }));
